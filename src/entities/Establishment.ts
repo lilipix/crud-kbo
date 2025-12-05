@@ -1,22 +1,6 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Enterprise } from "./Enterprise";
 
-/**
- * @openapi
- * components:
- *   schemas:
- *     Establishment:
- *       type: object
- *       properties:
- *         establishmentNumber:
- *           type: string
- *         startDate:
- *           type: string
- *           nullable: true
- *         enterpriseNumber:
- *           type: string
- */
-
 @Entity()
 export class Establishment {
   @PrimaryColumn("text")
