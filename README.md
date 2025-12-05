@@ -32,6 +32,7 @@ L'API est documentée via Swagger, validée via Zod, et optimisée pour l'import
 
 ### Suppression
 - Suppression d'une entreprise **avec cascade** sur toutes ses données associées
+- Supression d'un établissement
 
 ---
 
