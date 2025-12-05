@@ -269,7 +269,7 @@ router.delete("/:enterpriseNumber", async (req, res) => {
  */
 
 router.post(
-  "/:enterpriseNumber/establishments",
+  "/:enterpriseNumber/establishment",
   validate(CreateEstablishmentSchema),
   async (req, res) => {
     try {
