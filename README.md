@@ -35,15 +35,69 @@ L'API est documentée via Swagger, validée via Zod, et optimisée pour l'import
 
 ---
 
-## Technologies utilisées
+## Choix techniques
 
-- **Node.js + Express**
-- **TypeScript**
-- **TypeORM** (PostgreSQL)
-- **Zod** pour la validation
-- **Swagger (OpenAPI 3)** pour la documentation
-- **pg-copy-streams** pour l'import performant
-- **Docker** pour PostgreSQL
+### Stack principale
+
+#### TypeScript
+- Typage statique pour réduire les erreurs et améliorer la maintenabilité
+- Autocomplétion, refactoring facilité, détection d'erreurs avant compilation
+
+#### TypeORM + PostgreSQL
+- ORM robuste avec support complet des relations complexes
+- PostgreSQL pour ses performances, ACID, et fonctions avancées (ILIKE)
+- Gestion automatique des migrations et cascade delete
+
+#### Zod
+- Validation runtime avec génération automatique des types TypeScript
+- Une seule source de vérité pour la validation et les types
+- Intégration parfaite avec TypeScript (vs Joi/Yup)
+
+#### Swagger (OpenAPI 3)
+- Documentation interactive 
+- Testable directement depuis le navigateur
+- Génération automatique de clients API
+
+### Optimisations
+
+#### pg-copy-streams
+- Import massif de CSV (millions de lignes)
+- 10-100x plus rapide que des INSERT classiques
+- Utilisation de tables temporaires + COPY PostgreSQL
+
+#### Architecture en couches
+- **Controllers** : Gestion des routes HTTP et réponses
+- **Services** : Logique métier et orchestration
+- **Repositories** : Accès aux données (pattern Repository)
+- **Validators** : Validation des entrées avec Zod
+- **Avantage** : Séparation des responsabilités, testabilité, maintenabilité
+
+#### Index PostgreSQL
+- Index sur toutes les clés étrangères pour optimiser les jointures
+- Index sur `denomination` pour recherches 
+- Recherches 10-100x plus rapides sur des tables de millions de lignes
+
+---
+
+## Modèle conceptuel de données
+
+<img width="4383" height="2062" alt="Untitled diagram-2025-12-05-214301" src="https://github.com/user-attachments/assets/69e11d7d-01c2-48fd-aa19-deda94c9488a" />
+
+---
+
+## Relations du modèle de données
+
+Le modèle est centré sur l’entité **Enterprise**, identifiée par `EnterpriseNumber`.  
+Toutes les autres tables y sont reliées via une clé étrangère.
+
+### Relations :
+
+- **Enterprise 1—N Address**
+- **Enterprise 1—N Contact**
+- **Enterprise 1—N Denomination**
+- **Enterprise 1—N Branch**
+- **Enterprise 1—N Establishment**
+- **Enterprise 1—N Activity**
 
 ---
 
