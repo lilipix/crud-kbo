@@ -17,49 +17,56 @@ interface RawAddress {
 async function importAddresses() {
   await dataSource.initialize();
 
-  await dataSource.synchronize();
-
   const csvPath = path.join(__dirname, "csv/address.csv");
-
-  // ⚡ Lecture 100% en mémoire → très rapide
   const rows = await readCSV<RawAddress>(csvPath);
-
   const repo = dataSource.getRepository(Address);
 
-  let count = 0;
+  const BATCH_SIZE = 1000;
+  let buffer: Address[] = [];
 
-  for (const row of rows) {
-    if (!row.EntityNumber) {
-      console.warn("⚠️ Ligne ignorée (pas d'EntityNumber):", row);
+  for (const raw of rows) {
+    if (!raw.EntityNumber || raw.EntityNumber.trim() === "") {
+      console.warn("⚠️ Adresse ignorée (pas d'EntityNumber)", raw);
       continue;
     }
 
     const address = repo.create({
-      entityNumber: row.EntityNumber,
-      typeOfAddress: row.TypeOfAddress || null,
-      countryFR: row.CountryFR || null,
-      zipcode: row.Zipcode || null,
-      streetFR: row.StreetFR || null,
-      houseNumber: row.HouseNumber || null,
-      box: row.Box || null,
-      dateStrikingOff: row.DateStrikingOff || null,
+      entityNumber: raw.EntityNumber.trim(),
+      typeOfAddress: raw.TypeOfAddress || null,
+      countryFR: raw.CountryFR || null,
+      zipcode: raw.Zipcode || null,
+      streetFR: raw.StreetFR || null,
+      houseNumber: raw.HouseNumber || null,
+      box: raw.Box || null,
+      dateStrikingOff: raw.DateStrikingOff || null,
     });
 
-    try {
+    buffer.push(address);
+
+    if (buffer.length >= BATCH_SIZE) {
       await repo
         .createQueryBuilder()
         .insert()
         .into(Address)
-        .values(address)
-        .orIgnore() // 🔥 évite les erreurs de doublons
+        .values(buffer)
+        .orIgnore()
         .execute();
-
-      count++;
-    } catch (err) {
-      console.error("❌ Erreur sur la ligne :", row, err);
+      buffer = [];
     }
   }
-  process.exit(0);
+
+  if (buffer.length > 0) {
+    await repo
+      .createQueryBuilder()
+      .insert()
+      .into(Address)
+      .values(buffer)
+      .orIgnore()
+      .execute();
+  }
+
+  console.log("✅ Import terminé !");
+  process.exit();
 }
 
 importAddresses();

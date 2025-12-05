@@ -14,6 +14,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
+    "@types/pg-copy-streams": "^1.2.5",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "ts-node-dev": "^2.0.0",
@@ -26,9 +27,11 @@
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "pg": "^8.16.3",
+    "pg-copy-streams": "^7.0.0",
     "reflect-metadata": "^0.2.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.28"
+    "typeorm": "^0.3.28",
+    "zod": "^4.1.13"
   }
 }

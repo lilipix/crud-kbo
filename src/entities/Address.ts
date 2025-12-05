@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
 import { Enterprise } from "./Enterprise";
 
 @Entity()
@@ -13,6 +19,7 @@ export class Address {
     nullable: true,
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "entityNumber" })
   enterprise?: Enterprise | null;
 
   @Column("text", { nullable: true })

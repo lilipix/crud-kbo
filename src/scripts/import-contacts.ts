@@ -1,58 +1,205 @@
+// src/scripts/import-contacts-fast.ts
+import "reflect-metadata";
+import dotenv from "dotenv";
+dotenv.config();
 import { dataSource } from "../datasource";
-import { Contact } from "../entities/Contact";
-import { readCSV } from "./utils/csv";
+import fs from "fs";
 import path from "path";
+import csvParser from "csv-parser";
+import { Transform } from "stream";
+import { from as copyFrom } from "pg-copy-streams";
 
-interface RawContact {
-  EntityNumber: string;
-  EntityContact: string;
-  ContactType: string;
-  Value: string;
+function cleanEntityNumber(num: string): string {
+  return num.trim();
 }
 
-async function importContacts() {
-  await dataSource.initialize();
+function createCleanTransform(stats: { cleaned: number; skipped: number }) {
+  return new Transform({
+    objectMode: true,
+    transform(row: any, encoding, callback) {
+      if (!row.EntityNumber || row.EntityNumber.trim() === "") {
+        stats.skipped++;
+        return callback();
+      }
 
-  await dataSource.synchronize();
+      const entityNumber = cleanEntityNumber(row.EntityNumber);
 
-  const csvPath = path.join(__dirname, "csv/contacts.csv");
+      if (entityNumber.length > 15) {
+        stats.skipped++;
+        return callback();
+      }
 
-  // ⚡ Chargement total en mémoire (OK pour un fichier de taille moyenne)
-  const rows = await readCSV<RawContact>(csvPath);
+      const cleanedRow = [
+        entityNumber,
+        row.EntityContact || "",
+        row.ContactType || "",
+        row.Value || "",
+      ];
 
-  const repo = dataSource.getRepository(Contact);
+      stats.cleaned++;
 
-  let count = 0;
+      if (stats.cleaned % 10000 === 0) {
+        console.log(`  📝 ${stats.cleaned} lignes traitées...`);
+      }
 
-  for (const row of rows) {
-    if (!row.EntityNumber) {
-      console.warn("⚠️ Ligne ignorée (pas d'EntityNumber):", row);
-      continue;
-    }
+      const line = cleanedRow
+        .map((val) => {
+          const str = String(val);
+          if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        })
+        .join(",");
 
-    const contact = repo.create({
-      entityNumber: row.EntityNumber,
-      entityContact: row.EntityContact || null,
-      contactType: row.ContactType || null,
-      value: row.Value || null,
+      callback(null, line + "\n");
+    },
+  });
+}
+
+async function importWithStreaming(inputPath: string) {
+  console.log("🚀 Import avec streaming direct...");
+
+  const queryRunner = dataSource.createQueryRunner();
+  await queryRunner.connect();
+
+  const stats = { cleaned: 0, skipped: 0 };
+
+  try {
+    await queryRunner.query(`
+      CREATE TEMP TABLE temp_contact (
+        entity_number VARCHAR(15),
+        entity_contact TEXT,
+        contact_type TEXT,
+        value TEXT
+      );
+    `);
+
+    console.log("  ✅ Table temporaire créée");
+
+    const client = (queryRunner as any).databaseConnection;
+
+    const copyCommand = `
+      COPY temp_contact(entity_number, entity_contact, contact_type, value)
+      FROM STDIN
+      WITH (FORMAT csv, DELIMITER ',', NULL '', ENCODING 'UTF8')
+    `;
+
+    const copyStream = client.query(copyFrom(copyCommand));
+
+    await new Promise<void>((resolve, reject) => {
+      const fileStream = fs.createReadStream(inputPath);
+      const parser = csvParser();
+      const cleaner = createCleanTransform(stats);
+
+      fileStream.on("error", reject);
+      parser.on("error", reject);
+      cleaner.on("error", reject);
+      copyStream.on("error", reject);
+      copyStream.on("finish", resolve);
+
+      fileStream.pipe(parser).pipe(cleaner).pipe(copyStream);
     });
 
-    try {
-      await repo
-        .createQueryBuilder()
-        .insert()
-        .into(Contact)
-        .values(contact)
-        .orIgnore()
-        .execute();
+    console.log(
+      `  ✅ ${stats.cleaned} lignes importées, ${stats.skipped} ignorées`
+    );
 
-      count++;
-    } catch (err) {
-      console.error("❌ Erreur sur la ligne :", row, err);
+    const countResult = await queryRunner.query(
+      `SELECT COUNT(*) as count FROM temp_contact;`
+    );
+    const tempCount = parseInt(countResult[0].count);
+    console.log(`  📊 ${tempCount} lignes dans la table temporaire`);
+
+    console.log("  🔗 Création des relations avec les entreprises...");
+
+    await queryRunner.query(`
+      INSERT INTO contact(
+        "entityNumber",
+        "entityContact",
+        "contactType",
+        value
+      )
+      SELECT
+        tc.entity_number,
+        NULLIF(tc.entity_contact, ''),
+        NULLIF(tc.contact_type, ''),
+        NULLIF(tc.value, '')
+      FROM temp_contact tc
+    `);
+
+    console.log(`  ✅ Relations créées`);
+
+    const orphansResult = await queryRunner.query(`
+      SELECT COUNT(*) as count 
+      FROM contact
+      WHERE "enterpriseEnterpriseNumber" IS NULL;
+    `);
+    const orphansCount = parseInt(orphansResult[0].count);
+
+    if (orphansCount > 0) {
+      console.warn(`  ⚠️  ${orphansCount} contacts sans entreprise associée`);
     }
-  }
 
-  process.exit(0);
+    const finalCountResult = await queryRunner.query(
+      `SELECT COUNT(*) as count FROM contact;`
+    );
+    const finalCount = parseInt(finalCountResult[0].count);
+
+    console.log(`  ✅ ${finalCount} contacts dans la base de données\n`);
+
+    return {
+      cleaned: stats.cleaned,
+      skipped: stats.skipped,
+      orphans: orphansCount,
+      final: finalCount,
+    };
+  } finally {
+    await queryRunner.release();
+  }
 }
 
-importContacts();
+async function importContactsFast() {
+  const startTime = Date.now();
+
+  console.log("═══════════════════════════════════════════════════");
+  console.log("🚀 Import rapide des Contacts (Streaming direct)");
+  console.log("═══════════════════════════════════════════════════\n");
+
+  try {
+    const inputPath = path.join(__dirname, "csv/contact.csv");
+
+    if (!fs.existsSync(inputPath)) {
+      throw new Error(`❌ Fichier non trouvé: ${inputPath}`);
+    }
+
+    console.log(`📂 Fichier: ${inputPath}\n`);
+
+    await dataSource.initialize();
+    console.log("✅ Connexion à la base de données établie\n");
+
+    const { cleaned, skipped, orphans, final } = await importWithStreaming(
+      inputPath
+    );
+
+    const duration = Math.round((Date.now() - startTime) / 1000);
+
+    console.log("═══════════════════════════════════════════════════");
+    console.log("✅ Import terminé !");
+    console.log(`   ⏱️  Durée: ${duration}s`);
+    console.log(`   📝 Lignes traitées: ${cleaned}`);
+    console.log(`   ⚠️  Lignes ignorées: ${skipped}`);
+    console.log(`   👻 Orphelins (sans entreprise): ${orphans}`);
+    console.log(`   💾 Contacts en base: ${final}`);
+    console.log("═══════════════════════════════════════════════════");
+
+    await dataSource.destroy();
+    process.exit(0);
+  } catch (error) {
+    console.error("\n❌ Erreur fatale:", error);
+    await dataSource.destroy();
+    process.exit(1);
+  }
+}
+
+importContactsFast();

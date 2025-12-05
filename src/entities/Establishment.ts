@@ -1,13 +1,10 @@
-import { Entity, PrimaryColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { Enterprise } from "./Enterprise";
 
 @Entity()
 export class Establishment {
   @PrimaryColumn("text")
   establishmentNumber!: string;
-
-  @Column("text", { nullable: true })
-  startDate!: string | null;
 
   @Column("text")
   enterpriseNumber!: string;
@@ -16,5 +13,9 @@ export class Establishment {
     nullable: true,
     onDelete: "CASCADE",
   })
+  @JoinColumn({ name: "enterpriseNumber" })
   enterprise?: Enterprise | null;
+
+  @Column("text", { nullable: true })
+  startDate!: string | null;
 }

@@ -1,6 +1,10 @@
 import { dataSource } from "../datasource";
 import { Establishment } from "../entities/Establishment";
 import { Enterprise } from "../entities/Enterprise";
+import {
+  CreateEstablishmentInput,
+  UpdateEstablishmentInput,
+} from "../validators/establishment.schema";
 
 export class EstablishmentService {
   private repo = dataSource.getRepository(Establishment);
@@ -8,7 +12,7 @@ export class EstablishmentService {
 
   async createEstablishment(
     enterpriseNumber: string,
-    data: Partial<Establishment>
+    data: CreateEstablishmentInput
   ) {
     const enterprise = await this.enterpriseRepo.findOne({
       where: { enterpriseNumber },
@@ -28,9 +32,13 @@ export class EstablishmentService {
 
   async updateEstablishment(
     establishmentNumber: string,
-    data: Partial<Establishment>
+    data: UpdateEstablishmentInput
   ) {
     await this.repo.update(establishmentNumber, data);
     return this.repo.findOne({ where: { establishmentNumber } });
+  }
+
+  async delete(establishmentNumber: string) {
+    return this.repo.delete({ establishmentNumber });
   }
 }

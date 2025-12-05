@@ -38,7 +38,7 @@ import { Contact } from "./Contact";
 
 @Entity()
 export class Enterprise {
-  @PrimaryColumn({ length: 10 })
+  @PrimaryColumn({ length: 15 })
   enterpriseNumber!: string;
 
   @Column({ type: "varchar", nullable: true })

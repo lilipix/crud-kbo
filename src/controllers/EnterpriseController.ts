@@ -1,6 +1,15 @@
 import { Router } from "express";
 import { EnterpriseService } from "../services/EnterpriseService";
 import { EstablishmentService } from "../services/EstablishmentService";
+import {
+  createEnterpriseSchema,
+  updateEnterpriseSchema,
+} from "../validators/enterprise.schema";
+import { validate } from "../middleware/validate";
+import {
+  createEstablishmentSchema,
+  updateEstablishmentSchema,
+} from "../validators/establishment.schema";
 
 const router = Router();
 const service = new EnterpriseService();
@@ -34,48 +43,152 @@ const establishment = new EstablishmentService();
  */
 
 router.get("/number/:enterpriseNumber", async (req, res) => {
-  const enterprise = await service.findOne(req.params.enterpriseNumber);
-  res.json(enterprise);
+  try {
+    const enterprise = await service.findOne(req.params.enterpriseNumber);
+
+    if (!enterprise) {
+      return res.status(404).json({
+        error: "Enterprise not found",
+      });
+    }
+
+    res.json(enterprise);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal server error while fetching enterprise",
+    });
+  }
 });
 
 router.get("/name/:denomination", async (req, res) => {
-  const enterprise = await service.findOneByName(req.params.denomination);
-  res.json(enterprise);
+  try {
+    const enterprise = await service.findOneByName(req.params.denomination);
+
+    if (!enterprise) {
+      return res.status(404).json({
+        error: "Enterprise not found",
+      });
+    }
+
+    res.json(enterprise);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal server error while searching enterprise by name",
+    });
+  }
 });
 
-router.post("/", async (req, res) => {
-  const result = await service.create(req.body);
-  res.json(result);
+router.post("/", validate(createEnterpriseSchema), async (req, res) => {
+  try {
+    const result = await service.create(req.body);
+    if (!result) {
+      return res.status(404).json({ error: "Enterprise not found" });
+    }
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-router.put("/:enterpriseNumber", async (req, res) => {
-  const updated = await service.updateByEnterpriseNumber(
-    req.params.enterpriseNumber,
-    req.body
-  );
-  res.json(updated);
-});
+router.put(
+  "/:enterpriseNumber",
+  validate(updateEnterpriseSchema),
+  async (req, res) => {
+    try {
+      const updated = await service.updateByEnterpriseNumber(
+        req.params.enterpriseNumber,
+        req.body
+      );
+      if (!updated) {
+        return res.status(404).json({ error: "Enterprise not found" });
+      }
+      res.json(updated);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+);
 
 router.delete("/:enterpriseNumber", async (req, res) => {
-  await service.delete(req.params.enterpriseNumber);
-  res.json({ message: "Enterprise deleted." });
+  try {
+    const result = await service.delete(req.params.enterpriseNumber);
+
+    if (result.affected === 0) {
+      return res.status(404).json({
+        error: "Enterprise not found",
+      });
+    }
+
+    res.json({ message: "Enterprise deleted." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal server error while deleting enterprise",
+    });
+  }
 });
 
 // ESTABLISHMENT
-router.post("/:enterpriseNumber/establishments", async (req, res) => {
-  const result = await establishment.createEstablishment(
-    req.params.enterpriseNumber,
-    req.body
-  );
-  res.json(result);
-});
+router.post(
+  "/:enterpriseNumber/establishments",
+  validate(createEstablishmentSchema),
+  async (req, res) => {
+    try {
+      const result = await establishment.createEstablishment(
+        req.params.enterpriseNumber,
+        req.body
+      );
+      if (!result) {
+        return res.status(404).json({ error: "Establishment not found" });
+      }
+      res.json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+);
 
-router.put("/establishments/:establishmentNumber", async (req, res) => {
-  const result = await establishment.updateEstablishment(
-    req.params.establishmentNumber,
-    req.body
-  );
-  res.json(result);
-});
+router.put(
+  "/enterpriseNumber/:establishmentNumber",
+  validate(updateEstablishmentSchema),
+  async (req, res) => {
+    try {
+      const result = await establishment.updateEstablishment(
+        req.params.establishmentNumber,
+        req.body
+      );
+      if (!result) {
+        return res.status(404).json({ error: "Establishment not found" });
+      }
+      res.json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+);
 
+router.delete("/:enterpriseNumber/:establishmentNumber", async (req, res) => {
+  try {
+    const deleted = await service.delete(req.params.establishmentNumber);
+
+    if (deleted.affected === 0) {
+      return res.status(404).json({
+        error: "Establishment not found",
+      });
+    }
+
+    res.json({ message: "Establishment deleted." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal server error while deleting establishment",
+    });
+  }
+});
 export default router;
