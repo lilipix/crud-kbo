@@ -49,17 +49,35 @@ L'API est documentée via Swagger, validée via Zod, et optimisée pour l'import
 
 ## Architecture du projet
 ```
-src/
-├── controllers/        # Routes Express et gestion des endpoints API
-├── entities/           # Entités TypeORM (modèles de données)
-├── services/           # Logique métier et interactions avec la base de données
-├── validators/         # Schémas Zod pour la validation des requêtes
-├── swagger/            # Définitions des schémas Swagger OpenAPI
-├── scripts/            # Scripts d'import CSV (streaming + PostgreSQL COPY)
-├── swagger.ts          # Configuration Swagger + génération openapi.json
-├── datasource.ts       # Connexion TypeORM + configuration PostgreSQL
-└── index.ts            # Point d'entrée du serveur Express
+kbo-api/
+├── src/
+│   ├── controllers/        # Routes Express et gestion des endpoints API
+│   ├── entities/           # Entités TypeORM (modèles de données)
+│   ├── middleware/         # Middleware de validation Zod
+│   ├── repositories/       # Couche d'accès aux données (pattern Repository)
+│   ├── scripts/            # Scripts d'import CSV (streaming + PostgreSQL COPY)
+│   │   └── csv/            # Fichiers CSV à importer (non versionnés)
+│   ├── services/           # Logique métier et interactions avec la base de données
+│   ├── swagger/
+│   │   ├── schemas.ts      # Conversion des schémas Zod vers OpenAPI
+│   │   └── swagger.ts      # Configuration Swagger + génération openapi.json
+│   ├── validators/         # Schémas Zod pour la validation des requêtes
+│   ├── app.ts              # Configuration de l'application Express
+│   ├── datasource.ts       # Connexion TypeORM + configuration PostgreSQL
+│   └── index.ts            # Point d'entrée du serveur Express
+├── docs/
+│   └── openapi.json        # Fichier OpenAPI généré
+├── .env                    # Variables d'environnement (non versionné)
+├── .env.example            # Template des variables d'environnement
+├── .gitignore              # Fichiers à ignorer par Git
+├── docker-compose.yml      # Configuration Docker pour PostgreSQL
+├── package.json            # Dépendances et scripts npm
+├── tsconfig.json           # Configuration TypeScript
+├── LICENSE                 # Licence MIT
+└── README.md               # Documentation du projet
 ```
+> **Note :** Les fichiers CSV dans `src/scripts/csv/` et le fichier `.env` ne sont pas versionnés dans Git.  
+> Voir les sections "Variables d'environnement" et "Importation des données" pour plus d'infos.
 
 ---
 
@@ -108,7 +126,7 @@ docs/openapi.json
 
 ## Optimisations SQL (Index)
 
-Pour améliorer les performances, notamment lors des recherches par `enterpriseNumber`, les index suivants ont été ajoutés :
+Pour améliorer les performances, notamment lors des recherches par `enterpriseNumber` ou par `denomination, les index suivants ont été ajoutés :
 ```sql
 CREATE INDEX idx_enterprise_number ON enterprise("enterpriseNumber");
 CREATE INDEX idx_activity_enterprise ON activity("entityNumber");
@@ -116,6 +134,7 @@ CREATE INDEX idx_address_enterprise ON address("entityNumber");
 CREATE INDEX idx_denomination_enterprise ON denomination("entityNumber");
 CREATE INDEX idx_contact_enterprise ON contact("entityNumber");
 CREATE INDEX idx_establishment_enterprise ON establishment("enterpriseNumber");
+CREATE INDEX idx_denomination_name_ilike ON denomination(denomination text_pattern_ops);
 ```
 
 ---
@@ -130,7 +149,7 @@ Les jeux de données officiels sont disponibles ici :
 
 [https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des](https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des)
 
-Dans la section **Données ouvertes – Open Data KBO**, télécharge les fichiers suivants :
+Dans la section **Données ouvertes – Open Data KBO**, télécharger les fichiers suivants :
 - `Address.csv`
 - `Activity.csv`
 - `Contact.csv`
@@ -141,7 +160,7 @@ Dans la section **Données ouvertes – Open Data KBO**, télécharge les fichie
 
 ### Où placer les fichiers ?
 
-Place chaque CSV dans :
+Placer chaque CSV dans :
 ```
 src/scripts/csv/
 ```
