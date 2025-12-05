@@ -1,12 +1,18 @@
+import { Code } from "../entities/Code";
 import { dataSource } from "../datasource";
 import { Enterprise } from "../entities/Enterprise";
 import {
   CreateEnterpriseInput,
   UpdateEnterpriseInput,
-} from "../validators/enterprise.schema";
+} from "../validators/enterprise.validator";
+import { Activity } from "../entities/Activity";
+import { Establishment } from "../entities/Establishment";
 
 export class EnterpriseService {
   private repo = dataSource.getRepository(Enterprise);
+  private codeRepo = dataSource.getRepository(Code);
+  private activityRepo = dataSource.getRepository(Activity);
+  private establishmentRepo = dataSource.getRepository(Establishment);
 
   async findOne(enterpriseNumber: string) {
     return this.repo.findOne({
@@ -36,9 +42,51 @@ export class EnterpriseService {
   }
 
   async create(data: CreateEnterpriseInput) {
-    const enterprise = this.repo.create(data);
+    return await dataSource.transaction(async (manager) => {
+      const activityCode = await this.codeRepo.findOne({
+        where: { code: data.activityCode },
+      });
 
-    return this.repo.save(enterprise);
+      if (!activityCode) {
+        throw new Error("Invalid activityCode: must exist in the CSV list.");
+      }
+      const enterprise = manager.create(Enterprise, {
+        enterpriseNumber: data.enterpriseNumber,
+        status: data.status ?? null,
+        juridicalSituation: data.juridicalSituation ?? null,
+        typeOfEnterprise: data.typeOfEnterprise ?? null,
+        juridicalForm: data.juridicalForm ?? null,
+        juridicalFormCAC: data.juridicalFormCAC ?? null,
+        startDate: data.startDate ? new Date(data.startDate) : null,
+      });
+
+      await manager.save(enterprise);
+
+      const activity = manager.create(Activity, {
+        entityNumber: data.enterpriseNumber,
+        naceCode: data.activityCode,
+        enterprise: enterprise,
+      });
+
+      await manager.save(activity);
+
+      if (data.establishments && data.establishments.length > 0) {
+        for (const e of data.establishments) {
+          const establishment = manager.create(Establishment, {
+            establishmentNumber: e.establishmentNumber,
+            startDate: e.startDate ?? null,
+            enterpriseNumber: data.enterpriseNumber,
+            enterprise: enterprise,
+          });
+
+          await manager.save(establishment);
+        }
+      }
+      return manager.findOne(Enterprise, {
+        where: { enterpriseNumber: data.enterpriseNumber },
+        relations: ["activities", "establishments"],
+      });
+    });
   }
 
   async updateByEnterpriseNumber(

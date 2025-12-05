@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { EnterpriseService } from "../services/EnterpriseService";
 import { EstablishmentService } from "../services/EstablishmentService";
-import {
-  createEnterpriseSchema,
-  updateEnterpriseSchema,
-} from "../validators/enterprise.schema";
+
 import { validate } from "../middleware/validate";
 import {
-  createEstablishmentSchema,
-  updateEstablishmentSchema,
-} from "../validators/establishment.schema";
+  CreateEnterpriseSchema,
+  UpdateEnterpriseSchema,
+} from "../validators/enterprise.validator";
+import {
+  CreateEstablishmentSchema,
+  UpdateEstablishmentSchema,
+} from "../validators/establishment.validator";
 
 const router = Router();
 const service = new EnterpriseService();
@@ -19,27 +20,29 @@ const establishment = new EstablishmentService();
 
 /**
  * @openapi
- * /enterprises/number/{enterpriseNumber}:
+ * /enterprise/number/{enterpriseNumber}:
  *   get:
- *     summary: Récupère une entreprise via son enterpriseNumber
+ *     summary: Get an enterprise by its enterpriseNumber
  *     tags:
- *       - Enterprises
+ *       - Enterprise
  *     parameters:
  *       - in: path
  *         name: enterpriseNumber
  *         required: true
  *         schema:
  *           type: string
- *         description: Numéro unique de l'entreprise (clé primaire)
+ *         example: "0550.479.651"
  *     responses:
  *       200:
- *         description: Une entreprise
+ *         description: Enterprise found
  *         content:
  *           application/json:
  *             schema:
  *               $ref: "#/components/schemas/Enterprise"
  *       404:
- *         description: Entreprise introuvable
+ *         description: Enterprise not found
+ *       500:
+ *         description: Internal server error
  */
 
 router.get("/number/:enterpriseNumber", async (req, res) => {
@@ -61,6 +64,33 @@ router.get("/number/:enterpriseNumber", async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /enterprise/name/{denomination}:
+ *   get:
+ *     summary: Search an enterprise by denomination
+ *     tags:
+ *       - Enterprise
+ *     parameters:
+ *       - in: path
+ *         name: denomination
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: "google"
+ *     responses:
+ *       200:
+ *         description: Enterprise found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Enterprise"
+ *       404:
+ *         description: No enterprise matches this name
+ *       500:
+ *         description: Internal server error
+ */
+
 router.get("/name/:denomination", async (req, res) => {
   try {
     const enterprise = await service.findOneByName(req.params.denomination);
@@ -80,22 +110,76 @@ router.get("/name/:denomination", async (req, res) => {
   }
 });
 
-router.post("/", validate(createEnterpriseSchema), async (req, res) => {
+/**
+ * @openapi
+ * /enterprise:
+ *   post:
+ *     summary: Create a new enterprise
+ *     tags:
+ *       - Enterprise
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/CreateEnterpriseInput"
+ *     responses:
+ *       201:
+ *         description: Enterprise successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/Enterprise"
+ *       400:
+ *         description: Invalid payload
+ *       500:
+ *         description: Internal server error
+ */
+
+router.post("/", validate(CreateEnterpriseSchema), async (req, res) => {
   try {
     const result = await service.create(req.body);
     if (!result) {
       return res.status(404).json({ error: "Enterprise not found" });
     }
-    res.json(result);
+    return res.status(201).json(result);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
+/**
+ * @openapi
+ * /enterprise/{enterpriseNumber}:
+ *   put:
+ *     summary: Update an existing enterprise
+ *     tags:
+ *       - Enterprise
+ *     parameters:
+ *       - in: path
+ *         name: enterpriseNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateEnterpriseInput"
+ *     responses:
+ *       200:
+ *         description: Enterprise updated successfully
+ *       404:
+ *         description: Enterprise not found
+ *       500:
+ *         description: Internal server error
+ */
+
 router.put(
   "/:enterpriseNumber",
-  validate(updateEnterpriseSchema),
+  validate(UpdateEnterpriseSchema),
   async (req, res) => {
     try {
       const updated = await service.updateByEnterpriseNumber(
@@ -112,6 +196,28 @@ router.put(
     }
   }
 );
+
+/**
+ * @openapi
+ * /enterprise/{enterpriseNumber}:
+ *   delete:
+ *     summary: Delete an enterprise by its number
+ *     tags:
+ *       - Enterprise
+ *     parameters:
+ *       - in: path
+ *         name: enterpriseNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Enterprise deleted
+ *       404:
+ *         description: Enterprise not found
+ *       500:
+ *         description: Internal server error
+ */
 
 router.delete("/:enterpriseNumber", async (req, res) => {
   try {
@@ -133,9 +239,38 @@ router.delete("/:enterpriseNumber", async (req, res) => {
 });
 
 // ESTABLISHMENT
+
+/**
+ * @openapi
+ * /enterprise/{enterpriseNumber}/establishments:
+ *   post:
+ *     summary: Create a new establishment for an enterprise
+ *     tags:
+ *       - Establishment
+ *     parameters:
+ *       - in: path
+ *         name: enterpriseNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/CreateEstablishmentInput"
+ *     responses:
+ *       201:
+ *         description: Establishment created
+ *       404:
+ *         description: Enterprise not found
+ *       500:
+ *         description: Internal server error
+ */
+
 router.post(
   "/:enterpriseNumber/establishments",
-  validate(createEstablishmentSchema),
+  validate(CreateEstablishmentSchema),
   async (req, res) => {
     try {
       const result = await establishment.createEstablishment(
@@ -153,9 +288,37 @@ router.post(
   }
 );
 
+/**
+ * @openapi
+ * /enterprise/enterpriseNumber/{establishmentNumber}:
+ *   put:
+ *     summary: Update an establishment
+ *     tags:
+ *       - Establishment
+ *     parameters:
+ *       - in: path
+ *         name: establishmentNumber
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UpdateEstablishmentInput"
+ *     responses:
+ *       200:
+ *         description: Establishment updated
+ *       404:
+ *         description: Establishment not found
+ *       500:
+ *         description: Internal server error
+ */
+
 router.put(
   "/enterpriseNumber/:establishmentNumber",
-  validate(updateEstablishmentSchema),
+  validate(UpdateEstablishmentSchema),
   async (req, res) => {
     try {
       const result = await establishment.updateEstablishment(
@@ -173,9 +336,32 @@ router.put(
   }
 );
 
+/**
+ * @openapi
+ * /enterprise/{enterpriseNumber}/{establishmentNumber}:
+ *   delete:
+ *     summary: Delete an establishment
+ *     tags:
+ *       - Establishment
+ *     parameters:
+ *       - in: path
+ *         name: enterpriseNumber
+ *         required: true
+ *       - in: path
+ *         name: establishmentNumber
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Establishment deleted
+ *       404:
+ *         description: Establishment not found
+ *       500:
+ *         description: Internal server error
+ */
+
 router.delete("/:enterpriseNumber/:establishmentNumber", async (req, res) => {
   try {
-    const deleted = await service.delete(req.params.establishmentNumber);
+    const deleted = await establishment.delete(req.params.establishmentNumber);
 
     if (deleted.affected === 0) {
       return res.status(404).json({

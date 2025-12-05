@@ -4,7 +4,7 @@ import { Enterprise } from "../entities/Enterprise";
 import {
   CreateEstablishmentInput,
   UpdateEstablishmentInput,
-} from "../validators/establishment.schema";
+} from "../validators/establishment.validator";
 
 export class EstablishmentService {
   private repo = dataSource.getRepository(Establishment);

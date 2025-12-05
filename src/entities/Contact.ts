@@ -7,6 +7,28 @@ import {
 } from "typeorm";
 import { Enterprise } from "./Enterprise";
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Contact:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         entityNumber:
+ *           type: string
+ *         entityContact:
+ *           type: string
+ *           nullable: true
+ *         contactType:
+ *           type: string
+ *           nullable: true
+ *         value:
+ *           type: string
+ *           nullable: true
+ */
+
 @Entity()
 export class Contact {
   @PrimaryGeneratedColumn()

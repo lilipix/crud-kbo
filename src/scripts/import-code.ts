@@ -103,7 +103,6 @@ async function importWithStreaming(inputPath: string) {
       `  ✅ ${stats.cleaned} lignes importées, ${stats.skipped} ignorées`
     );
 
-    // ✅ Compter les doublons dans temp_code
     const duplicatesResult = await queryRunner.query(`
       SELECT code, COUNT(*) as count
       FROM temp_code

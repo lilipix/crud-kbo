@@ -1,0 +1,840 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API CRUD Entreprises",
+    "version": "1.0.0",
+    "description": "Documentation Swagger automatique"
+  },
+  "components": {
+    "schemas": {
+      "Address": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "typeOfAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryFR": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipcode": {
+            "type": "string",
+            "nullable": true
+          },
+          "streetFR": {
+            "type": "string",
+            "nullable": true
+          },
+          "houseNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "box": {
+            "type": "string",
+            "nullable": true
+          },
+          "dateStrikingOff": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Activity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "entityNumber": {
+            "type": "string"
+          },
+          "activityGroup": {
+            "type": "string",
+            "nullable": true
+          },
+          "naceVersion": {
+            "type": "string",
+            "nullable": true
+          },
+          "naceCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "classification": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Denomination": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "entityNumber": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeOfDenomination": {
+            "type": "string",
+            "nullable": true
+          },
+          "denomination": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "entityNumber": {
+            "type": "string"
+          },
+          "entityContact": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactType": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Establishment": {
+        "type": "object",
+        "properties": {
+          "establishmentNumber": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "enterpriseNumber": {
+            "type": "string"
+          }
+        }
+      },
+      "Enterprise": {
+        "type": "object",
+        "properties": {
+          "enterpriseNumber": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "juridicalSituation": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeOfEnterprise": {
+            "type": "string",
+            "nullable": true
+          },
+          "juridicalForm": {
+            "type": "string",
+            "nullable": true
+          },
+          "juridicalFormCAC": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true
+          },
+          "addresses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "typeOfAddress": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "countryFR": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "zipcode": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "streetFR": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "houseNumber": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "box": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "dateStrikingOff": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "activities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "entityNumber": {
+                  "type": "string"
+                },
+                "activityGroup": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "naceVersion": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "naceCode": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "classification": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "denominations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "entityNumber": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "typeOfDenomination": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "denomination": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "contacts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "entityNumber": {
+                  "type": "string"
+                },
+                "entityContact": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "contactType": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "value": {
+                  "type": "string",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "establishments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "establishmentNumber": {
+                  "type": "string"
+                },
+                "startDate": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "enterpriseNumber": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateEnterpriseInput": {
+        "type": "object",
+        "required": [
+          "enterpriseNumber",
+          "activityCode"
+        ],
+        "properties": {
+          "enterpriseNumber": {
+            "type": "string",
+            "example": "0200.068.636",
+            "description": "Numéro unique de l'entreprise"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true,
+            "example": "AC",
+            "description": "Statut légal de l'entreprise"
+          },
+          "juridicalSituation": {
+            "type": "string",
+            "nullable": true,
+            "example": "012"
+          },
+          "typeOfEnterprise": {
+            "type": "string",
+            "nullable": true,
+            "example": "2"
+          },
+          "juridicalForm": {
+            "type": "string",
+            "nullable": true,
+            "example": "417"
+          },
+          "juridicalFormCAC": {
+            "type": "string",
+            "nullable": true,
+            "example": ""
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "example": "2025-12-05"
+          },
+          "activityCode": {
+            "type": "string",
+            "example": "01110",
+            "description": "Code NACE principal (doit exister dans la table des codes importée depuis les CSV)"
+          },
+          "addresses": {
+            "type": "array",
+            "description": "Liste des adresses de l'entreprise",
+            "items": {
+              "type": "object",
+              "required": [
+                "typeOfAddress",
+                "zipcode"
+              ],
+              "properties": {
+                "typeOfAddress": {
+                  "type": "string",
+                  "example": "Office"
+                },
+                "countryFR": {
+                  "type": "string",
+                  "example": "Belgique"
+                },
+                "zipcode": {
+                  "type": "string",
+                  "example": "1000"
+                },
+                "streetFR": {
+                  "type": "string",
+                  "example": "Rue Royale"
+                },
+                "houseNumber": {
+                  "type": "string",
+                  "example": "12"
+                },
+                "box": {
+                  "type": "string",
+                  "example": "B"
+                },
+                "dateStrikingOff": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": ""
+                }
+              }
+            }
+          },
+          "activities": {
+            "type": "array",
+            "description": "Activités secondaires (optionnel)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "activityGroup": {
+                  "type": "string"
+                },
+                "naceVersion": {
+                  "type": "string"
+                },
+                "naceCode": {
+                  "type": "string"
+                },
+                "classification": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "denominations": {
+            "type": "array",
+            "description": "Noms et abréviations de l'entreprise",
+            "items": {
+              "type": "object",
+              "required": [
+                "denomination"
+              ],
+              "properties": {
+                "language": {
+                  "type": "string",
+                  "example": "FR"
+                },
+                "typeOfDenomination": {
+                  "type": "string",
+                  "example": "LegalName"
+                },
+                "denomination": {
+                  "type": "string",
+                  "example": "Société Exemple SPRL"
+                }
+              }
+            }
+          },
+          "contacts": {
+            "type": "array",
+            "description": "Contacts associés",
+            "items": {
+              "type": "object",
+              "properties": {
+                "entityContact": {
+                  "type": "string",
+                  "example": "Email"
+                },
+                "contactType": {
+                  "type": "string",
+                  "example": "Professional"
+                },
+                "value": {
+                  "type": "string",
+                  "example": "contact@exemple.com"
+                }
+              }
+            }
+          },
+          "establishments": {
+            "type": "array",
+            "description": "Succursales / unités d’établissement",
+            "items": {
+              "type": "object",
+              "required": [
+                "establishmentNumber"
+              ],
+              "properties": {
+                "establishmentNumber": {
+                  "type": "string",
+                  "example": "123456789"
+                },
+                "startDate": {
+                  "type": "string",
+                  "example": "2020-01-01"
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateEnterpriseInput": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "juridicalSituation": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeOfEnterprise": {
+            "type": "string",
+            "nullable": true
+          },
+          "juridicalForm": {
+            "type": "string",
+            "nullable": true
+          },
+          "juridicalFormCAC": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          }
+        }
+      },
+      "CreateEstablishmentInput": {
+        "type": "object",
+        "required": [
+          "establishmentNumber"
+        ],
+        "properties": {
+          "establishmentNumber": {
+            "type": "string",
+            "example": "0123456789",
+            "description": "Unique establishment identifier"
+          },
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2020-01-01",
+            "description": "Date when the establishment became active"
+          }
+        }
+      },
+      "UpdateEstablishmentInput": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "nullable": true,
+            "example": "2022-05-12",
+            "description": "Updated start date of the establishment"
+          },
+          "enterpriseNumber": {
+            "type": "string",
+            "nullable": true,
+            "example": "0201.183.146",
+            "description": "Enterprise number to reassign the establishment"
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/enterprise/number/{enterpriseNumber}": {
+      "get": {
+        "summary": "Get an enterprise by its enterpriseNumber",
+        "tags": [
+          "Enterprise"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "enterpriseNumber",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "0550.479.651"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enterprise found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Enterprise not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/enterprise/name/{denomination}": {
+      "get": {
+        "summary": "Search an enterprise by denomination",
+        "tags": [
+          "Enterprise"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "denomination",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "google"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enterprise found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No enterprise matches this name"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/enterprise": {
+      "post": {
+        "summary": "Create a new enterprise",
+        "tags": [
+          "Enterprise"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnterpriseInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Enterprise successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Enterprise"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/enterprise/{enterpriseNumber}": {
+      "put": {
+        "summary": "Update an existing enterprise",
+        "tags": [
+          "Enterprise"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "enterpriseNumber",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEnterpriseInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Enterprise updated successfully"
+          },
+          "404": {
+            "description": "Enterprise not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an enterprise by its number",
+        "tags": [
+          "Enterprise"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "enterpriseNumber",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enterprise deleted"
+          },
+          "404": {
+            "description": "Enterprise not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/enterprise/{enterpriseNumber}/establishments": {
+      "post": {
+        "summary": "Create a new establishment for an enterprise",
+        "tags": [
+          "Establishment"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "enterpriseNumber",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEstablishmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Establishment created"
+          },
+          "404": {
+            "description": "Enterprise not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/enterprise/enterpriseNumber/{establishmentNumber}": {
+      "put": {
+        "summary": "Update an establishment",
+        "tags": [
+          "Establishment"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "establishmentNumber",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEstablishmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Establishment updated"
+          },
+          "404": {
+            "description": "Establishment not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/enterprise/{enterpriseNumber}/{establishmentNumber}": {
+      "delete": {
+        "summary": "Delete an establishment",
+        "tags": [
+          "Establishment"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "enterpriseNumber",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "establishmentNumber",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Establishment deleted"
+          },
+          "404": {
+            "description": "Establishment not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

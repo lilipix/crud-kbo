@@ -7,6 +7,31 @@ import {
 } from "typeorm";
 import { Enterprise } from "./Enterprise";
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Activity:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *         entityNumber:
+ *           type: string
+ *         activityGroup:
+ *           type: string
+ *           nullable: true
+ *         naceVersion:
+ *           type: string
+ *           nullable: true
+ *         naceCode:
+ *           type: string
+ *           nullable: true
+ *         classification:
+ *           type: string
+ *           nullable: true
+ */
+
 @Entity()
 export class Activity {
   @PrimaryGeneratedColumn()

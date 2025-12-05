@@ -11,13 +11,16 @@ import { Contact } from "./Contact";
  *   schemas:
  *     Enterprise:
  *       type: object
+ *       required:
+ *         - enterpriseNumber
  *       properties:
  *         enterpriseNumber:
  *           type: string
- *           example: "0123456789"
+ *           example: "0201.183.146"
  *         status:
  *           type: string
  *           nullable: true
+ *           example: "AC"
  *         juridicalSituation:
  *           type: string
  *           nullable: true
@@ -34,6 +37,26 @@ import { Contact } from "./Contact";
  *           type: string
  *           format: date
  *           nullable: true
+ *         addresses:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Address"
+ *         activities:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Activity"
+ *         denominations:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Denomination"
+ *         contacts:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Contact"
+ *         establishments:
+ *           type: array
+ *           items:
+ *             $ref: "#/components/schemas/Establishment"
  */
 
 @Entity()
