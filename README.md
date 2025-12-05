@@ -324,7 +324,7 @@ Le serveur tourne sur :
 | **GET** | `/enterprise/name/:denomination` | Recherche textuelle par nom |
 | **PUT** | `/enterprise/:enterpriseNumber` | Modifier une entreprise |
 | **DELETE** | `/enterprise/:enterpriseNumber` | Supprimer une entreprise + cascade |
-| **POST** | `/enterprise/:enterpriseNumber/establishments` | Créer un établissement |
+| **POST** | `/enterprise/:enterpriseNumber/establishment` | Créer un établissement |
 | **PUT** | `/enterprise/establishment/:establishmentNumber` | Modifier un établissement |
 | **DELETE** | `/enterprise/:enterpriseNumber/:establishmentNumber` | Supprimer un établissement |
 
