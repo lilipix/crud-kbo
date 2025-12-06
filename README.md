@@ -47,7 +47,7 @@ L'API est documentée via Swagger, validée via Zod, et optimisée pour l'import
 #### TypeORM + PostgreSQL
 - ORM robuste avec support complet des relations complexes
 - PostgreSQL pour ses performances, ACID, et fonctions avancées (ILIKE)
-- Gestion automatique des migrations et cascade delete
+- Cascade delete
 
 #### Zod
 - Validation runtime avec génération automatique des types TypeScript
@@ -200,11 +200,11 @@ L'application utilise plusieurs fichiers CSV issus de la **Banque-Carrefour des 
 
 ### Où télécharger les CSV ?
 
-Les jeux de données officiels sont disponibles ici :
+Les jeux de données officiels sont disponibles ici en créant un compte utilisateur:
 
-[https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des](https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des)
+[https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des/services-pour-tous/reutilisation-de-donnees/banque-carrefour-des-0](https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des/services-pour-tous/reutilisation-de-donnees/banque-carrefour-des-0)
 
-Dans la section **Données ouvertes – Open Data KBO**, télécharger les fichiers suivants :
+Dans la section **Open Data KBO**, télécharger les fichiers suivants :
 - `Address.csv`
 - `Activity.csv`
 - `Contact.csv`
@@ -220,7 +220,7 @@ Placer chaque CSV dans :
 src/scripts/csv/
 ```
 
-Ton dossier doit ressembler à ceci :
+Le dossier doit ressembler à ceci :
 ```
 src/scripts/csv/
 ├── address.csv
@@ -241,20 +241,16 @@ Les imports utilisent :
 - `pg-copy-streams` pour des performances maximales
 - Des requêtes SQL massives
 
-Commandes d'import :
+Commandes d'import avec ts-node :
 ```bash
-npm run import:address
-npm run import:activity
-npm run import:contact
-npm run import:denomination
-npm run import:establishment
-npm run import:enterprise
-npm run import:code
-```
+npx ts-node src/scripts/import-enterprises.ts
+npx ts-node src/scripts/import-activities.ts
+npx ts-node src/scripts/import-addresses.ts
+npx ts-node src/scripts/import-codes.ts
+npx ts-node src/scripts/import-contacts.ts
+npx ts-node src/scripts/import-denominations.ts
+npx ts-node src/scripts/import-establishments.ts
 
-Ou manuellement avec ts-node :
-```bash
-npx ts-node src/scripts/import-activities-fast.ts
 ```
 
 Les scripts existent pour :
@@ -272,8 +268,8 @@ Les scripts existent pour :
 
 ### 1. Cloner le projet
 ```bash
-git clone [ton-repo]
-cd [nom-du-projet]
+git clone git@github.com:lilipix/crud-kbo.git
+cd crud-kbo
 ```
 
 ### 2. Installer les dépendances
