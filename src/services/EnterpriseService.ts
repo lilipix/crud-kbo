@@ -2,8 +2,8 @@ import { Code } from "../entities/Code";
 import { dataSource } from "../datasource";
 import { Enterprise } from "../entities/Enterprise";
 import {
-  CreateEnterpriseInput,
-  UpdateEnterpriseInput,
+  CreateEnterprise,
+  UpdateEnterprise,
 } from "../validators/enterprise.validator";
 import { Activity } from "../entities/Activity";
 import { Establishment } from "../entities/Establishment";
@@ -11,8 +11,6 @@ import { Establishment } from "../entities/Establishment";
 export class EnterpriseService {
   private repo = dataSource.getRepository(Enterprise);
   private codeRepo = dataSource.getRepository(Code);
-  private activityRepo = dataSource.getRepository(Activity);
-  private establishmentRepo = dataSource.getRepository(Establishment);
 
   async findOne(enterpriseNumber: string) {
     return this.repo.findOne({
@@ -41,15 +39,8 @@ export class EnterpriseService {
       .getOne();
   }
 
-  async create(data: CreateEnterpriseInput) {
+  async create(data: CreateEnterprise) {
     return await dataSource.transaction(async (manager) => {
-      const activityCode = await this.codeRepo.findOne({
-        where: { code: data.activityCode },
-      });
-
-      if (!activityCode) {
-        throw new Error("Invalid activityCode: must exist in the CSV list.");
-      }
       const enterprise = manager.create(Enterprise, {
         enterpriseNumber: data.enterpriseNumber,
         status: data.status ?? null,
@@ -62,13 +53,27 @@ export class EnterpriseService {
 
       await manager.save(enterprise);
 
-      const activity = manager.create(Activity, {
-        entityNumber: data.enterpriseNumber,
-        naceCode: data.activityCode,
-        enterprise: enterprise,
-      });
+      if (data.activities && data.activities.length > 0) {
+        for (const activityInput of data.activities) {
+          // check nace code in table nace
+          const nace = await this.codeRepo.findOne({
+            where: { code: activityInput.naceCode },
+          });
 
-      await manager.save(activity);
+          if (!nace) {
+            throw new Error(`Invalid naceCode: ${activityInput.naceCode}`);
+          }
+
+          const activity = manager.create(Activity, {
+            entityNumber: enterprise.enterpriseNumber,
+            naceCode: activityInput.naceCode,
+            naceVersion: nace?.category?.replace("Nace", ""),
+            classification: activityInput.classification ?? "MAIN",
+          });
+
+          await manager.save(activity);
+        }
+      }
 
       if (data.establishments && data.establishments.length > 0) {
         for (const e of data.establishments) {
@@ -91,7 +96,7 @@ export class EnterpriseService {
 
   async updateByEnterpriseNumber(
     enterpriseNumber: string,
-    data: UpdateEnterpriseInput
+    data: UpdateEnterprise
   ) {
     const result = await this.repo.update({ enterpriseNumber }, data);
     if (result.affected === 0) return null;

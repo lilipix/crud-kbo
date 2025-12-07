@@ -1,49 +1,62 @@
-import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
-import { Express } from "express";
+import { Application } from "express";
+import {
+  OpenAPIRegistry,
+  OpenApiGeneratorV3,
+} from "@asteasolutions/zod-to-openapi";
 
-import { AddressSchema } from "./schemas/address.schema";
-import { ActivitySchema } from "./schemas/activity.schema";
-import { DenominationSchema } from "./schemas/denomination.schema";
-import { ContactSchema } from "./schemas/contact.schema";
-import { EstablishmentSchema } from "./schemas/establishment.schema";
-import { EnterpriseSchema } from "./schemas/enterprise.schemas";
+export const registry = new OpenAPIRegistry();
 
-import { CreateEnterpriseSchema } from "./schemas/create-enterprise.schema";
-import { UpdateEnterpriseSchema } from "./schemas/update-enterprise.schema";
-import { CreateEstablishmentSchema } from "./schemas/create-establishment.shema";
-import { UpdateEstablishmentSchema } from "./schemas/update-establishment.schema";
+import { CodeSchema } from "../validators/code.validator";
+import {
+  CreateEnterpriseSchema,
+  EnterpriseSchema,
+  UpdateEnterpriseSchema,
+} from "../validators/enterprise.validator";
+import { ActivitySchema } from "../validators/activities.validator";
+import { AddressSchema } from "../validators/addresses.validator";
+import { ContactSchema } from "../validators/contact.validator";
+import { DenominationSchema } from "../validators/denomination.validator";
+import {
+  CreateEstablishmentSchema,
+  EstablishmentSchema,
+  UpdateEstablishmentSchema,
+} from "../validators/establishment.validator";
 
-const options = {
-  definition: {
+registry.register("Enterprise", EnterpriseSchema);
+registry.register("CreateEnterprise", CreateEnterpriseSchema);
+registry.register("UpdateEnterprise", UpdateEnterpriseSchema);
+registry.register("Activity", ActivitySchema);
+registry.register("Address", AddressSchema);
+registry.register("Codes", CodeSchema);
+registry.register("Contact", ContactSchema);
+registry.register("Denomination", DenominationSchema);
+registry.register("Establishment", EstablishmentSchema);
+registry.register("CreateEstablishment", CreateEstablishmentSchema);
+registry.register("UpdateEstablishment", UpdateEstablishmentSchema);
+
+import "./routes/enterprise.routes.swagger";
+
+export function generateOpenApiDocument() {
+  const generator = new OpenApiGeneratorV3(registry.definitions);
+
+  return generator.generateDocument({
     openapi: "3.0.0",
     info: {
-      title: "API CRUD Entreprises",
       version: "1.0.0",
-      description: "Documentation Swagger automatique",
+      title: "KBO API",
+      description: "API pour les données KBO de Belgique",
     },
-    components: {
-      schemas: {
-        Address: AddressSchema,
-        Activity: ActivitySchema,
-        Denomination: DenominationSchema,
-        Contact: ContactSchema,
-        Establishment: EstablishmentSchema,
-        Enterprise: EnterpriseSchema,
+    servers: [{ url: "http://localhost:3000" }],
+  });
+}
 
-        CreateEnterpriseInput: CreateEnterpriseSchema,
-        UpdateEnterpriseInput: UpdateEnterpriseSchema,
+export function setupSwagger(app: Application): void {
+  const openApiDocument = generateOpenApiDocument();
 
-        CreateEstablishmentInput: CreateEstablishmentSchema,
-        UpdateEstablishmentInput: UpdateEstablishmentSchema,
-      },
-    },
-  },
-  apis: ["./src/controllers/*.ts"],
-};
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
-export const swaggerSpec = swaggerJsdoc(options);
-
-export function setupSwagger(app: Express) {
-  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.get("/api-docs.json", (req, res) => {
+    res.json(openApiDocument);
+  });
 }

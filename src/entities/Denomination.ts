@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { Enterprise } from "./Enterprise";
 
@@ -12,7 +13,8 @@ export class Denomination {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("text")
+  @Column({ type: "varchar", length: 15 })
+  @Index()
   entityNumber!: string;
 
   @ManyToOne(() => Enterprise, (e) => e.denominations, {
@@ -22,12 +24,13 @@ export class Denomination {
   @JoinColumn({ name: "entityNumber" })
   enterprise?: Enterprise | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 2, nullable: true })
   language!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 10, nullable: true })
   typeOfDenomination!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 300, nullable: true })
+  @Index()
   denomination!: string | null;
 }

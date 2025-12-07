@@ -1,12 +1,22 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Check,
+  Index,
+} from "typeorm";
 import { Enterprise } from "./Enterprise";
 
 @Entity()
+@Check(`"establishmentNumber" ~ '^2\.[0-9]{3}\.[0-9]{3}\.[0-9]{3}$'`)
 export class Establishment {
-  @PrimaryColumn("text")
+  @PrimaryColumn({ type: "varchar", length: 15 })
   establishmentNumber!: string;
 
-  @Column("text")
+  @Column({ type: "varchar", length: 15 })
+  @Index()
   enterpriseNumber!: string;
 
   @ManyToOne(() => Enterprise, (e) => e.establishments, {
@@ -16,6 +26,6 @@ export class Establishment {
   @JoinColumn({ name: "enterpriseNumber" })
   enterprise?: Enterprise | null;
 
-  @Column("text", { nullable: true })
-  startDate!: string | null;
+  @Column({ type: "date", nullable: true })
+  startDate!: Date | null;
 }

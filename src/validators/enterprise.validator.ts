@@ -1,25 +1,55 @@
-import { z } from "zod";
-import { ActivitySchema, CreateActivitySchema } from "./activities.validator";
+import { z } from "../lib/zod-openapi";
+
+import {
+  ActivitySchema,
+  CreateActivitySchema,
+  UpdateActivitySchema,
+} from "./activities.validator";
 import {
   CreateDenominationSchema,
   DenominationSchema,
+  UpdateDenominationSchema,
 } from "./denomination.validator";
-import { ContactSchema, CreateContactSchema } from "./contact.validator";
+import {
+  ContactSchema,
+  CreateContactSchema,
+  UpdateContactSchema,
+} from "./contact.validator";
 import {
   CreateEstablishmentSchema,
   EstablishmentSchema,
+  UpdateEstablishmentSchema,
 } from "./establishment.validator";
-import { AddressSchema, CreateAddressSchema } from "./addresses.validator";
+import {
+  AddressSchema,
+  CreateAddressSchema,
+  UpdateAddressSchema,
+} from "./addresses.validator";
 
-export const EnterpriseSchema = z.object({
-  enterpriseNumber: z.string(),
-  status: z.string().nullable(),
-  juridicalSituation: z.string().nullable(),
-  typeOfEnterprise: z.string().nullable(),
-  juridicalForm: z.string().nullable(),
-  juridicalFormCAC: z.string().nullable(),
-  startDate: z.string().nullable(),
+export const EnterpriseBaseSchema = z.object({
+  enterpriseNumber: z
+    .string()
+    .regex(/^\d{4}\.\d{3}\.\d{3}$/)
+    .openapi({
+      example: "0123.456.789",
+      description: "Numéro d'entreprise belge au format 0000.000.000",
+    }),
+  status: z.enum(["AC", "ST"]).nullable().openapi({
+    example: "AC",
+    description: "Statut de l'entreprise (AC=Actif, ST=Arrêté)",
+  }),
+  juridicalSituation: z.string().max(3).nullable().openapi({ example: "000" }),
+  typeOfEnterprise: z.string().length(1).nullable().openapi({ example: "2" }),
+  juridicalForm: z.string().max(10).nullable().openapi({ example: "116" }),
+  juridicalFormCAC: z.string().max(10).nullable().openapi({ example: "" }),
+  startDate: z.coerce.date().nullable().openapi({
+    type: "string",
+    format: "date",
+    example: "2020-01-15",
+  }),
+});
 
+export const EnterpriseSchema = EnterpriseBaseSchema.extend({
   addresses: z.array(AddressSchema),
   activities: z.array(ActivitySchema),
   denominations: z.array(DenominationSchema),
@@ -27,37 +57,26 @@ export const EnterpriseSchema = z.object({
   establishments: z.array(EstablishmentSchema),
 });
 
-export const CreateEnterpriseSchema = z.object({
-  enterpriseNumber: z.string().max(15),
-  status: z.string().optional(),
-  juridicalSituation: z.string().optional(),
-  typeOfEnterprise: z.string().optional(),
-  juridicalForm: z.string().optional(),
-  juridicalFormCAC: z.string().optional(),
-  startDate: z.string().optional(),
+export const CreateEnterpriseSchema = EnterpriseBaseSchema.extend({
+  establishments: z.array(CreateEstablishmentSchema).optional(),
   addresses: z.array(CreateAddressSchema).optional(),
   activities: z.array(CreateActivitySchema).optional(),
   denominations: z.array(CreateDenominationSchema).optional(),
   contacts: z.array(CreateContactSchema).optional(),
-  establishments: z.array(CreateEstablishmentSchema).optional(),
-  activityCode: z.string().optional(),
 });
 
-export type CreateEnterpriseInput = z.infer<typeof CreateEnterpriseSchema>;
+export const UpdateEnterpriseSchema = EnterpriseBaseSchema.omit({
+  enterpriseNumber: true,
+})
+  .partial()
+  .extend({
+    establishments: z.array(UpdateEstablishmentSchema).optional(),
+    addresses: z.array(UpdateAddressSchema).optional(),
+    activities: z.array(UpdateActivitySchema).optional(),
+    denominations: z.array(UpdateDenominationSchema).optional(),
+    contacts: z.array(UpdateContactSchema).optional(),
+  });
 
-export const UpdateEnterpriseSchema = z.object({
-  status: z.string().optional(),
-  juridicalSituation: z.string().optional(),
-  typeOfEnterprise: z.string().optional(),
-  juridicalForm: z.string().optional(),
-  juridicalFormCAC: z.string().optional(),
-  startDate: z.string().optional(),
-  addresses: z.array(CreateAddressSchema).optional(),
-  activities: z.array(CreateActivitySchema).optional(),
-  denominations: z.array(CreateDenominationSchema).optional(),
-  contacts: z.array(CreateContactSchema).optional(),
-  establishments: z.array(CreateEstablishmentSchema).optional(),
-  activityCode: z.string().optional(),
-});
-
-export type UpdateEnterpriseInput = z.infer<typeof UpdateEnterpriseSchema>;
+export type Enterprise = z.infer<typeof EnterpriseSchema>;
+export type CreateEnterprise = z.infer<typeof CreateEnterpriseSchema>;
+export type UpdateEnterprise = z.infer<typeof UpdateEnterpriseSchema>;

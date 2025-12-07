@@ -1,4 +1,3 @@
-// src/scripts/import-denominations-fast.ts
 import "reflect-metadata";
 import dotenv from "dotenv";
 dotenv.config();

@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { Enterprise } from "./Enterprise";
 
@@ -12,7 +13,8 @@ export class Address {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("text")
+  @Column({ type: "varchar", length: 15 })
+  @Index()
   entityNumber!: string;
 
   @ManyToOne(() => Enterprise, (e) => e.addresses, {
@@ -22,24 +24,24 @@ export class Address {
   @JoinColumn({ name: "entityNumber" })
   enterprise?: Enterprise | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 10, nullable: true })
   typeOfAddress!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 100, nullable: true })
   countryFR!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 4, nullable: true })
   zipcode!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 200, nullable: true })
   streetFR!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 10, nullable: true })
   houseNumber!: string | null;
 
-  @Column("text", { nullable: true })
+  @Column({ type: "varchar", length: 10, nullable: true })
   box!: string | null;
 
-  @Column("text", { nullable: true })
-  dateStrikingOff!: string | null;
+  @Column({ type: "date", nullable: true })
+  dateStrikingOff!: Date | null;
 }

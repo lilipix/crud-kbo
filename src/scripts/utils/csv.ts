@@ -9,11 +9,11 @@ export async function readCSV<T = any>(filePath: string): Promise<T[]> {
       .pipe(
         parse({
           delimiter: ",",
-          columns: true, // <-- utilise la première ligne comme header
+          columns: true,
           trim: true,
           skip_empty_lines: true,
-          relax_quotes: true, // <-- accepte les champs vides ""
-          relax_column_count: true, // <-- accepte un nombre de colonnes irrégulier
+          relax_quotes: true,
+          relax_column_count: true,
         })
       )
       .on("data", (row) => records.push(row))
