@@ -119,7 +119,7 @@ kbo-api/
 │   │   └── csv/            # Fichiers CSV à importer (non versionnés)
 │   ├── services/           # Logique métier et interactions avec la base de données
 │   ├── swagger/
-│   │   ├── schemas.ts      # Conversion des schémas Zod vers OpenAPI
+│   │   ├── routes/         # Génération des routes pour Swagger
 │   │   └── swagger.ts      # Configuration Swagger + génération openapi.json
 │   ├── validators/         # Schémas Zod pour la validation des requêtes
 │   ├── app.ts              # Configuration de l'application Express
@@ -169,6 +169,7 @@ Une documentation interactive complète de l'API est disponible à :
 Les schémas OpenAPI sont générés automatiquement à partir des fichiers dans :
 ```
 src/swagger/
+
 src/validators/
 ```
 
@@ -207,7 +208,7 @@ L'application utilise plusieurs fichiers CSV issus de la **Banque-Carrefour des 
 
 ### Où télécharger les CSV ?
 
-Les jeux de données officiels sont disponibles ici en créant un compte utilisateur:
+Les jeux de données officiels sont disponibles ici en créant un compte utilisateur :
 
 [https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des/services-pour-tous/reutilisation-de-donnees/banque-carrefour-des-0](https://economie.fgov.be/fr/themes/entreprises/banque-carrefour-des/services-pour-tous/reutilisation-de-donnees/banque-carrefour-des-0)
 
