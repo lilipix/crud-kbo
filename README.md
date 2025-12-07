@@ -55,7 +55,7 @@ L'API est documentée via Swagger, validée via Zod, et optimisée pour l'import
 - Intégration parfaite avec TypeScript (vs Joi/Yup)
 
 #### Swagger (OpenAPI 3)
-- Documentation interactive 
+- Documentation interactive auto-générée depuis les schémas Zod
 - Testable directement depuis le navigateur
 - Génération automatique de clients API
 
@@ -164,18 +164,20 @@ Une documentation interactive complète de l'API est disponible à :
 Les schémas OpenAPI sont générés automatiquement à partir des fichiers dans :
 ```
 src/swagger/
+src/validators/
 ```
 
 La documentation inclut :
 - Tous les endpoints disponibles
+- Les schémas Zod convertis en schémas OpenAPI
 - Les schémas de requête/réponse
 - Les exemples d'utilisation
 - La possibilité de tester les endpoints directement
 
-Un fichier statique OpenAPI est également généré dans :
-```
-docs/openapi.json
-```
+Un fichier statique OpenAPI JSON est également disponible à :
+
+**http://localhost:3000/api-docs.json**
+
 
 ---
 
