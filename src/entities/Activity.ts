@@ -30,8 +30,8 @@ export class Activity {
   @Column({ type: "varchar", length: 10, nullable: true })
   naceVersion!: string | null;
 
-  @Column({ type: "varchar", length: 8 })
-  naceCode!: string;
+  @Column({ type: "varchar", length: 8, nullable: true })
+  naceCode!: string | null;
 
   @Column({ type: "varchar", length: 10, nullable: true })
   classification!: string | null;
