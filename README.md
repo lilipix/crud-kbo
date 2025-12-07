@@ -46,8 +46,13 @@ L'API est documentée via Swagger, validée via Zod, et optimisée pour l'import
 
 #### TypeORM + PostgreSQL
 - ORM robuste avec support complet des relations complexes
+- Utilisation de l’approche Data Mapper de TypeORM. Les entités définissent les
+données et la logique métier est centralisée dans les services. Cette approche est adaptée pour un
+projet structuré, facilite les tests et respecte une architecture propre.
 - PostgreSQL pour ses performances, ACID, et fonctions avancées (ILIKE)
 - Cascade delete
+
+
 
 #### Zod
 - Validation runtime avec génération automatique des types TypeScript
