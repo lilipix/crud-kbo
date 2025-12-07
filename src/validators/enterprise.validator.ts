@@ -59,10 +59,7 @@ export const EnterpriseSchema = EnterpriseBaseSchema.extend({
 
 export const CreateEnterpriseSchema = EnterpriseBaseSchema.extend({
   establishments: z.array(CreateEstablishmentSchema).optional(),
-  addresses: z.array(CreateAddressSchema).optional(),
   activities: z.array(CreateActivitySchema).optional(),
-  denominations: z.array(CreateDenominationSchema).optional(),
-  contacts: z.array(CreateContactSchema).optional(),
 });
 
 export const UpdateEnterpriseSchema = EnterpriseBaseSchema.omit({
@@ -71,10 +68,6 @@ export const UpdateEnterpriseSchema = EnterpriseBaseSchema.omit({
   .partial()
   .extend({
     establishments: z.array(UpdateEstablishmentSchema).optional(),
-    addresses: z.array(UpdateAddressSchema).optional(),
-    activities: z.array(UpdateActivitySchema).optional(),
-    denominations: z.array(UpdateDenominationSchema).optional(),
-    contacts: z.array(UpdateContactSchema).optional(),
   });
 
 export type Enterprise = z.infer<typeof EnterpriseSchema>;

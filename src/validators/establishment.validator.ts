@@ -34,7 +34,6 @@ export const CreateEstablishmentSchema = EstablishmentSchema.omit({
 });
 
 export const UpdateEstablishmentSchema = EstablishmentSchema.omit({
-  establishmentNumber: true,
   enterpriseNumber: true,
 }).partial();
 

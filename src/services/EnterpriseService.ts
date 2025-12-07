@@ -68,7 +68,7 @@ export class EnterpriseService {
             entityNumber: enterprise.enterpriseNumber,
             naceCode: activityInput.naceCode,
             naceVersion: nace?.category?.replace("Nace", ""),
-            classification: activityInput.classification ?? "MAIN",
+            classification: activityInput.classification ?? "",
           });
 
           await manager.save(activity);
@@ -76,10 +76,10 @@ export class EnterpriseService {
       }
 
       if (data.establishments && data.establishments.length > 0) {
-        for (const e of data.establishments) {
+        for (const est of data.establishments) {
           const establishment = manager.create(Establishment, {
-            establishmentNumber: e.establishmentNumber,
-            startDate: e.startDate ?? null,
+            establishmentNumber: est.establishmentNumber,
+            startDate: est.startDate ?? null,
             enterpriseNumber: data.enterpriseNumber,
             enterprise: enterprise,
           });
@@ -98,9 +98,53 @@ export class EnterpriseService {
     enterpriseNumber: string,
     data: UpdateEnterprise
   ) {
-    const result = await this.repo.update({ enterpriseNumber }, data);
-    if (result.affected === 0) return null;
-    return this.findOne(enterpriseNumber);
+    return await dataSource.transaction(async (manager) => {
+      const enterprise = await manager.findOne(Enterprise, {
+        where: { enterpriseNumber },
+        relations: ["establishments"],
+      });
+
+      if (!enterprise) return null;
+
+      Object.assign(enterprise, {
+        status: data.status ?? enterprise.status,
+        juridicalSituation:
+          data.juridicalSituation ?? enterprise.juridicalSituation,
+        typeOfEnterprise: data.typeOfEnterprise ?? enterprise.typeOfEnterprise,
+        juridicalForm: data.juridicalForm ?? enterprise.juridicalForm,
+        juridicalFormCAC: data.juridicalFormCAC ?? enterprise.juridicalFormCAC,
+        startDate: data.startDate
+          ? new Date(data.startDate)
+          : enterprise.startDate,
+      });
+
+      await manager.save(enterprise);
+
+      if (data.establishments) {
+        for (const establishment of data.establishments) {
+          const existing = await manager.findOne(Establishment, {
+            where: { establishmentNumber: establishment.establishmentNumber },
+          });
+
+          if (existing) {
+            existing.startDate = establishment.startDate
+              ? new Date(establishment.startDate)
+              : existing.startDate;
+            await manager.save(existing);
+          } else {
+            const newEstablishment = manager.create(Establishment, {
+              establishmentNumber: establishment.establishmentNumber,
+              startDate: establishment.startDate
+                ? new Date(establishment.startDate)
+                : null,
+              enterpriseNumber,
+            });
+            await manager.save(newEstablishment);
+          }
+        }
+      }
+      return this.findOne(enterpriseNumber);
+    });
   }
 
   async delete(enterpriseNumber: string) {
