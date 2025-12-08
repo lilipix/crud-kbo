@@ -20,6 +20,7 @@ import { DenominationSchema } from "../validators/denomination.validator";
 import {
   CreateEstablishmentSchema,
   EstablishmentSchema,
+  UpdateEstablishmentPartialSchema,
   UpdateEstablishmentSchema,
 } from "../validators/establishment.validator";
 
@@ -34,6 +35,10 @@ registry.register("Denomination", DenominationSchema);
 registry.register("Establishment", EstablishmentSchema);
 registry.register("CreateEstablishment", CreateEstablishmentSchema);
 registry.register("UpdateEstablishment", UpdateEstablishmentSchema);
+registry.register(
+  "UpdateEstablishmentPartial",
+  UpdateEstablishmentPartialSchema
+);
 
 import "./routes/enterprise.routes.swagger";
 

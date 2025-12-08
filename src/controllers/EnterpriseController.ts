@@ -9,6 +9,7 @@ import {
 } from "../validators/enterprise.validator";
 import {
   CreateEstablishmentSchema,
+  UpdateEstablishmentPartialSchema,
   UpdateEstablishmentSchema,
 } from "../validators/establishment.validator";
 
@@ -148,7 +149,7 @@ router.post(
 
 router.put(
   "/enterpriseNumber/:establishmentNumber",
-  validate(UpdateEstablishmentSchema),
+  validate(UpdateEstablishmentPartialSchema),
   async (req, res) => {
     try {
       const result = await establishment.updateEstablishment(

@@ -37,10 +37,19 @@ export const UpdateEstablishmentSchema = EstablishmentSchema.omit({
   enterpriseNumber: true,
 }).partial();
 
+export const UpdateEstablishmentPartialSchema = EstablishmentSchema.omit({
+  enterpriseNumber: true,
+  establishmentNumber: true,
+}).partial();
+
 export type Establishment = z.infer<typeof EstablishmentSchema>;
 export type CreateEstablishmentInput = z.infer<
   typeof CreateEstablishmentSchema
 >;
 export type UpdateEstablishmentInput = z.infer<
   typeof UpdateEstablishmentSchema
+>;
+
+export type UpdateEstablishmentPartialInput = z.infer<
+  typeof UpdateEstablishmentPartialSchema
 >;

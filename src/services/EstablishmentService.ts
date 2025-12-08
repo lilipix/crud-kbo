@@ -3,7 +3,7 @@ import { Establishment } from "../entities/Establishment";
 import { Enterprise } from "../entities/Enterprise";
 import {
   CreateEstablishmentInput,
-  UpdateEstablishmentInput,
+  UpdateEstablishmentPartialInput,
 } from "../validators/establishment.validator";
 
 export class EstablishmentService {
@@ -39,7 +39,7 @@ export class EstablishmentService {
 
   async updateEstablishment(
     establishmentNumber: string,
-    data: UpdateEstablishmentInput
+    data: UpdateEstablishmentPartialInput
   ) {
     await this.repo.update(establishmentNumber, data);
     return this.repo.findOne({ where: { establishmentNumber } });

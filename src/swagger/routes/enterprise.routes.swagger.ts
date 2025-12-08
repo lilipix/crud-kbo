@@ -9,6 +9,7 @@ import {
   EstablishmentSchema,
   CreateEstablishmentSchema,
   UpdateEstablishmentSchema,
+  UpdateEstablishmentPartialSchema,
 } from "../../validators/establishment.validator";
 
 // ============================================
@@ -26,7 +27,7 @@ registry.registerPath({
       enterpriseNumber: z
         .string()
         .describe("Enterprise number")
-        .openapi({ example: "0550.479.651" }),
+        .openapi({ example: "0201.310.929" }),
     }),
   },
   responses: {
@@ -235,7 +236,7 @@ registry.registerPath({
     body: {
       content: {
         "application/json": {
-          schema: UpdateEstablishmentSchema,
+          schema: UpdateEstablishmentPartialSchema,
         },
       },
     },
