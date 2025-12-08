@@ -303,12 +303,7 @@ DB_NAME=kbo_db
 docker compose up -d
 ```
 
-### 5. (Optionnel) Générer la documentation OpenAPI
-```bash
-npm run openapi:generate
-```
-
-### 6. Lancer le serveur
+### 5. Lancer le serveur
 ```bash
 npm run dev
 ```
@@ -339,14 +334,6 @@ Le serveur tourne sur :
 Toutes les fonctionnalités peuvent être testées directement via :
 
 **http://localhost:3000/docs**
-
----
-
-## Notes supplémentaires
-
-- Les cascades de suppression sont gérées par TypeORM (`onDelete: "CASCADE"`)
-- La validation Zod s'applique automatiquement via le middleware
-- Les imports CSV sont optimisés pour gérer des millions de lignes
 
 ---
 
