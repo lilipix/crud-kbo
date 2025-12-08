@@ -217,6 +217,9 @@ registry.registerPath({
     404: {
       description: "Enterprise not found",
     },
+    409: {
+      description: "Already exists",
+    },
     500: {
       description: "Internal server error",
     },
