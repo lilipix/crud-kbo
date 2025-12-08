@@ -164,7 +164,7 @@ Ces schémas sont utilisés via le middleware `validate()` pour valider automati
 
 Une documentation interactive complète de l'API est disponible à :
 
-**http://localhost:3000/docs**
+**http://localhost:3000/api-docs**
 
 Les schémas OpenAPI sont générés automatiquement à partir des fichiers dans :
 ```
@@ -333,7 +333,7 @@ Le serveur tourne sur :
 
 Toutes les fonctionnalités peuvent être testées directement via :
 
-**http://localhost:3000/docs**
+**http://localhost:3000/api-docs**
 
 ---
 
