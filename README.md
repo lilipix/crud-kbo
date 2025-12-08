@@ -73,8 +73,7 @@ projet structuré, facilite les tests et respecte une architecture propre.
 
 #### Architecture en couches
 - **Controllers** : Gestion des routes HTTP et réponses
-- **Services** : Logique métier et orchestration
-- **Repositories** : Accès aux données (pattern Repository)
+- **Services** : Logique métier et orchestration, utilisent directement les repositories TypeORM
 - **Validators** : Validation des entrées avec Zod
 - **Avantage** : Séparation des responsabilités, testabilité, maintenabilité
 
@@ -114,10 +113,9 @@ kbo-api/
 │   ├── controllers/        # Routes Express et gestion des endpoints API
 │   ├── entities/           # Entités TypeORM (modèles de données)
 │   ├── middleware/         # Middleware de validation Zod
-│   ├── repositories/       # Couche d'accès aux données (pattern Repository)
 │   ├── scripts/            # Scripts d'import CSV (streaming + PostgreSQL COPY)
 │   │   └── csv/            # Fichiers CSV à importer (non versionnés)
-│   ├── services/           # Logique métier et interactions avec la base de données
+│   ├── services/           # Logique métier et interactions avec la base de données, utilisent directement les repositories TypeORM
 │   ├── swagger/
 │   │   ├── routes/         # Génération des routes pour Swagger
 │   │   └── swagger.ts      # Configuration Swagger + génération openapi.json
