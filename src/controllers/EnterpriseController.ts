@@ -63,7 +63,15 @@ router.post("/", validate(CreateEnterpriseSchema), async (req, res) => {
       return res.status(404).json({ error: "Enterprise not found" });
     }
     return res.status(201).json(result);
-  } catch (err) {
+  } catch (err: any) {
+    if (err.message === "Enterprise already exists") {
+      return res.status(409).json({ error: err.message });
+    }
+    if (err.code === "23505") {
+      return res.status(409).json({
+        error: "Enterprise already exists (duplicate enterpriseNumber)",
+      });
+    }
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
@@ -123,8 +131,16 @@ router.post(
         return res.status(404).json({ error: "Establishment not found" });
       }
       res.json(result);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      if (err.message === "Establishment already exists") {
+        return res.status(409).json({ error: err.message });
+      }
+      // if (err.code === "23505") {
+      //   return res.status(409).json({
+      //     error: "Establishment already exists (duplicate enterpriseNumber)",
+      //   });
+      // }
       res.status(500).json({ error: "Server error" });
     }
   }

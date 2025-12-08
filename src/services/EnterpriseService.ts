@@ -41,6 +41,14 @@ export class EnterpriseService {
 
   async create(data: CreateEnterprise) {
     return await dataSource.transaction(async (manager) => {
+      const existing = await manager.findOne(Enterprise, {
+        where: { enterpriseNumber: data.enterpriseNumber },
+      });
+
+      if (existing) {
+        throw new Error("Enterprise already exists");
+      }
+
       const enterprise = manager.create(Enterprise, {
         enterpriseNumber: data.enterpriseNumber,
         status: data.status ?? null,

@@ -21,6 +21,13 @@ export class EstablishmentService {
     if (!enterprise) {
       throw new Error("Enterprise not found");
     }
+    const existing = await this.repo.findOne({
+      where: { establishmentNumber: data.establishmentNumber },
+    });
+
+    if (existing) {
+      throw new Error("Establishment already exists");
+    }
 
     const establishment = this.repo.create({
       ...data,

@@ -304,10 +304,7 @@
       },
       "CreateEnterpriseInput": {
         "type": "object",
-        "required": [
-          "enterpriseNumber",
-          "activityCode"
-        ],
+        "required": ["enterpriseNumber", "activityCode"],
         "properties": {
           "enterpriseNumber": {
             "type": "string",
@@ -356,10 +353,7 @@
             "description": "Liste des adresses de l'entreprise",
             "items": {
               "type": "object",
-              "required": [
-                "typeOfAddress",
-                "zipcode"
-              ],
+              "required": ["typeOfAddress", "zipcode"],
               "properties": {
                 "typeOfAddress": {
                   "type": "string",
@@ -419,9 +413,7 @@
             "description": "Noms et abréviations de l'entreprise",
             "items": {
               "type": "object",
-              "required": [
-                "denomination"
-              ],
+              "required": ["denomination"],
               "properties": {
                 "language": {
                   "type": "string",
@@ -464,9 +456,7 @@
             "description": "Succursales / unités d’établissement",
             "items": {
               "type": "object",
-              "required": [
-                "establishmentNumber"
-              ],
+              "required": ["establishmentNumber"],
               "properties": {
                 "establishmentNumber": {
                   "type": "string",
@@ -513,9 +503,7 @@
       },
       "CreateEstablishmentInput": {
         "type": "object",
-        "required": [
-          "establishmentNumber"
-        ],
+        "required": ["establishmentNumber"],
         "properties": {
           "establishmentNumber": {
             "type": "string",
@@ -553,9 +541,7 @@
     "/enterprise/number/{enterpriseNumber}": {
       "get": {
         "summary": "Get an enterprise by its enterpriseNumber",
-        "tags": [
-          "Enterprise"
-        ],
+        "tags": ["Enterprise"],
         "parameters": [
           {
             "in": "path",
@@ -564,7 +550,7 @@
             "schema": {
               "type": "string"
             },
-            "example": "0550.479.651"
+            "example": "0201.310.929"
           }
         ],
         "responses": {
@@ -590,9 +576,7 @@
     "/enterprise/name/{denomination}": {
       "get": {
         "summary": "Search an enterprise by denomination",
-        "tags": [
-          "Enterprise"
-        ],
+        "tags": ["Enterprise"],
         "parameters": [
           {
             "in": "path",
@@ -627,9 +611,7 @@
     "/enterprise": {
       "post": {
         "summary": "Create a new enterprise",
-        "tags": [
-          "Enterprise"
-        ],
+        "tags": ["Enterprise"],
         "requestBody": {
           "required": true,
           "content": {
@@ -663,9 +645,7 @@
     "/enterprise/{enterpriseNumber}": {
       "put": {
         "summary": "Update an existing enterprise",
-        "tags": [
-          "Enterprise"
-        ],
+        "tags": ["Enterprise"],
         "parameters": [
           {
             "in": "path",
@@ -700,9 +680,7 @@
       },
       "delete": {
         "summary": "Delete an enterprise by its number",
-        "tags": [
-          "Enterprise"
-        ],
+        "tags": ["Enterprise"],
         "parameters": [
           {
             "in": "path",
@@ -729,9 +707,7 @@
     "/enterprise/{enterpriseNumber}/establishments": {
       "post": {
         "summary": "Create a new establishment for an enterprise",
-        "tags": [
-          "Establishment"
-        ],
+        "tags": ["Establishment"],
         "parameters": [
           {
             "in": "path",
@@ -768,9 +744,7 @@
     "/enterprise/enterpriseNumber/{establishmentNumber}": {
       "put": {
         "summary": "Update an establishment",
-        "tags": [
-          "Establishment"
-        ],
+        "tags": ["Establishment"],
         "parameters": [
           {
             "in": "path",
@@ -807,9 +781,7 @@
     "/enterprise/{enterpriseNumber}/{establishmentNumber}": {
       "delete": {
         "summary": "Delete an establishment",
-        "tags": [
-          "Establishment"
-        ],
+        "tags": ["Establishment"],
         "parameters": [
           {
             "in": "path",

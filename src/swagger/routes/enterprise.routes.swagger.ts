@@ -106,6 +106,9 @@ registry.registerPath({
     400: {
       description: "Invalid payload",
     },
+    409: {
+      description: "Already exists",
+    },
     500: {
       description: "Internal server error",
     },
